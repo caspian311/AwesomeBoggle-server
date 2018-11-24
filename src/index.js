@@ -6,8 +6,8 @@ let mysql = require('mysql');
 
 let conn = mysql.createConnection({
   host: "localhost",
-  user: "root",
-  password: "",
+  user: "awesomeboggle",
+  password: "awesomeboggle",
   database: "awesomeboggle"
 });
 
@@ -22,13 +22,13 @@ conn.connect((err) => {
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
-app.get('/games', (req, res) => {
+app.get('/availableUsers', (req, res) => {
   let sql = `
-    SELECT g.*
-    FROM games g, scores s, users u
-    WHERE g.finished = 0
-    AND g.id = s.game_id
-    and s.user_id = u.id
+    SELECT u.*
+    FROM users u, games g, scores s
+    WHERE s.game_id = g.id
+      AND s.user_id = u.id
+      AND g.finished = 0
   `;
   conn.query(sql, (err, results) => {
     if (err) {
@@ -36,7 +36,6 @@ app.get('/games', (req, res) => {
     }
     res.json(results);
   });
-
 });
 
 let server = app.listen(8080, () => {
