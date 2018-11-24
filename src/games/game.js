@@ -28,73 +28,48 @@ const getGameSql = `
 
 
 class Game {
-  static createGame(gameMembers) {
-    return new Promise((resolve, reject) => {
-      conn.query(createGameSql, (err, results) => {
-        if (err) {
-          reject(err);
-        } else {
-          let gameId = results.insertId;
-          let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
+  static async createGame(gameMembers) {
+    try{
+      let createdGameResults = await conn.query(createGameSql);
 
-          conn.query(createScore, [scoreData], (err, results) => {
-            if (err) {
-              reject(err);
-            } else {
-              let game = { game: { gameId: gameId } };
-              resolve(game);
-            }
-          });
-        }
-      });
-    });
+      let gameId = createdGameResults.insertId;
+      let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
+
+      await conn.query(createScore, [scoreData]);
+
+      return { game: { gameId: gameId } };
+    } catch(err) {
+      throw new err;
+    }
   }
 
-  static completeGame(gameId, userId, score) {
-    return new Promise((resolve, reject) => {
-      conn.query(updateScoreSql, [ score, gameId, userId ], (err, results) => {
-        if (err) {
-          reject(err);
-        } else {
-          conn.query(updateGameSql, [ gameId ], (err, results) => {
-            if (err) {
-              reject(err);
-            } else {
-              conn.query(getGameSql, [ gameId ], (err, results) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(results);
-                }
-              });
-            }
-          });
-        }
-    });
-    });
+  static async completeGame(gameId, userId, score) {
+    try {
+      await conn.query(updateScoreSql, [ score, gameId, userId ]);
+      await conn.query(updateGameSql, [ gameId ]);
+      return await conn.query(getGameSql, [ gameId ]);
+    } catch(err) {
+      throw new err;
+    }
   }
 
-  static getGame(gameId) {
-    return new Promise((resolve, reject) => {
-      conn.query(getGameSql, [ gameId ], (err, results) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (results.length === 0) {
-            resolve({});
-          } else {
-            let game = {
-              id: results[0].gameId,
-              finished: results[0].finished,
-              scores: results.map((score) => {
-                return { userId: score.userId, username: score.username, score: score.score };
-              })
-            };
-            resolve(game);
-          }
-        }
-      });
-    });
+  static async getGame(gameId) {
+    try {
+      let results = await conn.query(getGameSql, [ gameId ]);
+      if (results.length === 0) {
+        return {};
+      }
+
+      return {
+        id: results[0].gameId,
+        finished: results[0].finished,
+        scores: results.map((score) => {
+          return { userId: score.userId, username: score.username, score: score.score };
+        })
+      };
+    } catch (err) {
+      throw new err;
+    }
   }
 }
 

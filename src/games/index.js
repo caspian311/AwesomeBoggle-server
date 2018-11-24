@@ -3,38 +3,46 @@ const app = require('express').Router();
 const conn = require('../db');
 const Game = require('./game');
 
-app.post('/', (req, res) => {
+app.post('/', createGame);
+app.put('/:gameId', completeGame);
+app.get('/:gameId', getGame);
+
+async function createGame(req, res) {
   let gameMembers = req.body["user_ids"];
-  Game.createGame(gameMembers).then((game) => {
+  
+  try {
+    let game = await Game.createGame(gameMembers);
     res.json(game);
-  }).catch((err) => {
+  } catch (err) {
     console.log(err);
     res.status(500);
-  });
-});
+  }
+}
 
-app.put('/:gameId', (req, res) => {
+async function completeGame(req, res) {
   let gameId = req.params.gameId;
   let userId = req.body["score"]["userId"];
   let score = req.body["score"]["score"];
 
-  Game.completeGame(gameId, userId, score).then((game) => {
+  try {
+    let game = await Game.completeGame(gameId, userId, score);
     res.json(game)
-  }).catch((err) => {
+  } catch(err) {
     console.log(err);
     res.status(500);
-  });
-});
+  }
+}
 
-app.get('/:gameId', (req, res) => {
-  let gameId = req.params["gameId"]
+async function getGame(req, res) {
+  let gameId = req.params["gameId"];
 
-  Game.getGame(gameId).then((game) => {
+  try {
+    let game = await Game.getGame(gameId);
     res.json(game);
-  }).catch((err) => {
+  } catch(err) {
     console.log(err);
     res.status(500);
-  });
-});
+  }
+}
 
 module.exports = app;
