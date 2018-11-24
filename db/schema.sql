@@ -1,0 +1,22 @@
+
+CREATE DATABASE IF NOT EXISTS awesomeboggle;
+
+USE awesomeboggle;
+
+CREATE TABLE IF NOT EXISTS games (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   created_on DATETIME NOT NULL,
+   finished INT DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS users (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   username VARCHAR(255),
+   created_on DATETIME NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS scores (
+   user_id INT NOT NULL,
+   game_id INT NOT NULL,
+   score INT NOT NULL
+);
