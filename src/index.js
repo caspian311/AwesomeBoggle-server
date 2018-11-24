@@ -22,7 +22,6 @@ conn.connect((err) => {
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
-
 app.get('/availableUsers', (req, res) => {
   let sql = `
     SELECT u.*
@@ -40,6 +39,32 @@ app.get('/availableUsers', (req, res) => {
       throw err;
     }
     res.json(results);
+  });
+});
+
+app.post('/joinGame', (req, res) => {
+  let gameMembers = req.body["user_ids"];
+
+  let createGameSql = `
+    INSERT INTO games (created_on, finished)
+      values (NOW(), 0)
+  `;
+  conn.query(createGameSql, (err, results) => {
+    if (err) {
+      throw err;
+    }
+
+    let gameId = results.insertId;
+
+    let createScore = `INSERT INTO scores (game_id, user_id, score) VALUES ?`;
+    let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
+    conn.query(createScore, [scoreData], (err, results) => {
+      if (err) {
+        throw err;
+      }
+
+      res.json({ game: { id: gameId } })
+    });
   });
 });
 

@@ -1,5 +1,6 @@
 
-CREATE DATABASE IF NOT EXISTS awesomeboggle;
+DROP DATABASE IF EXISTS awesomeboggle;
+CREATE DATABASE awesomeboggle;
 
 USE awesomeboggle;
 
@@ -16,10 +17,10 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS scores (
-   user_id INT NOT NULL,
    game_id INT NOT NULL,
+   user_id INT NOT NULL,
    score INT NOT NULL,
-   PRIMARY KEY (user_id, game_id),
-   FOREIGN KEY (game_id) REFERENCES game(id) ON DELETE CASCADE,
-   FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+   PRIMARY KEY (game_id, user_id),
+   FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE,
+   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

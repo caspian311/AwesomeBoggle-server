@@ -1,6 +1,8 @@
 USE awesomeboggle;
 
-DELETE FROM USERS;
+DELETE FROM users;
+DELETE FROM games;
+DELETE FROM scores;
 
 SET @hour_ago = DATE_SUB(NOW(), INTERVAL 1 HOUR);
 
