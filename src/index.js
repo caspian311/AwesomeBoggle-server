@@ -112,6 +112,38 @@ app.put('/completeGame', (req, res) => {
   });
 });
 
+app.get('/game/:gameId', (req, res) => {
+  let gameId = req.params["gameId"]
+
+  let getGameSql = `
+    SELECT g.id as gameId, g.finished as finished, g.created_on as created_on,
+      u.id as userId, u.username as username,
+      s.score as score
+    FROM games g, users u, scores s
+    WHERE g.id = s.game_id
+    AND u.id = s.user_id
+    AND g.id = ?
+  `;
+  conn.query(getGameSql, [ gameId ], (err, results) => {
+    if (err) {
+      throw err;
+    }
+
+    if (results.length === 0) {
+      res.json([]);
+    }
+
+    let game = {
+      id: results[0].gameId,
+      finished: results[0].finished,
+      scores: results.map((score) => {
+        return { userId: score.userId, username: score.username, score: score.score };
+      })
+    };
+    res.json(game)
+  });
+});
+
 let server = app.listen(8080, () => {
   let host = server.address().address;
   let port = server.address().port;
