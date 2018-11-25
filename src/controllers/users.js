@@ -16,8 +16,22 @@ async function availableUsers(req, res) {
 
 async function checkUsernameAvailability(req, res) {
   const username = req.params.username;
+  try {
+    let user = await User.findByUsername(username);
 
-  res.send(200);
+    if (user) {
+      res.status(409);
+      res.json({
+        message: "Username is not available."
+      });
+    } else {
+      res.json({
+        message: "Username is available."
+      });
+    }
+  } catch (err) {
+    res.status(500);
+  }
 }
 
 module.exports = app;

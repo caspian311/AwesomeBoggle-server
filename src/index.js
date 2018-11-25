@@ -5,9 +5,9 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
 const config = require('./config');
-const users = require('./users');
-const games = require('./games');
-const registrations = require('./registrations');
+const users = require('./controllers/users');
+const games = require('./controllers/games');
+const registrations = require('./controllers/registrations');
 
 const app = express();
 
