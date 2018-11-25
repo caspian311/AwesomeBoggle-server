@@ -2,6 +2,9 @@ const env = process.env.NODE_ENV || 'development';
 
 const configuration = {
   'development': {
+    'logging': {
+      'level': 'dev'
+    },
     'web': {
       'host': '0.0.0.0',
       'port': 8080,
