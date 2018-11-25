@@ -59,7 +59,7 @@ class User {
         authToken: authToken
       };
     } catch (err) {
-      throw new err;
+      throw err;
     }
   }
 }
