@@ -1,8 +1,8 @@
 const app = require('express').Router();
-const conn = require('../db');
-const User = require('./user');
+const User = require('../models/user');
 
 app.get('/', availableUsers);
+app.get('/:username', checkUsernameAvailability);
 
 async function availableUsers(req, res) {
   try {
@@ -11,7 +11,13 @@ async function availableUsers(req, res) {
   } catch (err) {
     console.log(err);
     res.status(500);
-  };
+  }
+}
+
+async function checkUsernameAvailability(req, res) {
+  const username = req.params.username;
+
+  res.send(200);
 }
 
 module.exports = app;

@@ -1,7 +1,6 @@
 const app = require('express').Router();
 
-const conn = require('../db');
-const Game = require('./game');
+const Game = require('../models/game');
 
 app.post('/', createGame);
 app.put('/:gameId', completeGame);
@@ -9,7 +8,7 @@ app.get('/:gameId', getGame);
 
 async function createGame(req, res) {
   let gameMembers = req.body["user_ids"];
-  
+
   try {
     let game = await Game.createGame(gameMembers);
     res.json(game);

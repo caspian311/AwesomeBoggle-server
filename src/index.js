@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const config = require('./config');
 const users = require('./users');
 const games = require('./games');
+const registrations = require('./registrations');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(morgan(config.logging.level));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
+app.use('/registrations', registrations);
 app.use('/users', users);
 app.use('/games', games);
 
