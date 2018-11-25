@@ -9,12 +9,17 @@ let conn = mysql.createConnection({
   database: config.db.database
 });
 
+
 conn.connect((err) => {
   if (err) {
     throw err;
   }
 
   console.log("Database connection made");
+});
+
+conn.on('error', function(err) {
+  console.log("[mysql error]", err);
 });
 
 module.exports = conn;

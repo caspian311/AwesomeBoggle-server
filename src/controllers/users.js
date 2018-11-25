@@ -10,7 +10,7 @@ async function availableUsers(req, res) {
     res.json(users);
   } catch (err) {
     console.log(err);
-    res.status(500);
+    res.send(500);
   }
 }
 
@@ -30,7 +30,8 @@ async function checkUsernameAvailability(req, res) {
       });
     }
   } catch (err) {
-    res.status(500);
+    console.log(err);
+    res.send(500);
   }
 }
 

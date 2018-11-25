@@ -1,3 +1,5 @@
+const uuid = require('uuid/v1');
+
 const conn = require('../db');
 
 const availableUsersSql = `
@@ -16,6 +18,10 @@ const usernameAvailabilitySql = `
   FROM users u
   WHERE u.username = ?
 `;
+const createUserSql = `
+  INSERT INTO users (username, auth_token, created_on)
+    VALUES (?, ?, NOW())
+`;
 
 class User {
   static async getAvailableUsers() {
@@ -29,12 +35,29 @@ class User {
   static async findByUsername(username) {
     try {
       let results = await conn.query(usernameAvailabilitySql, username);
-      
-      if (results.length ==0) {
+
+      if (results.length === 0) {
         return null;
       } else {
         return results[0];
       }
+    } catch (err) {
+      throw new err;
+    }
+  }
+
+  static async create(username) {
+    let authToken = uuid();
+
+    try {
+      let results = await conn.query(createUserSql, [username, authToken]);
+      let userId = results.insertId;
+
+      return {
+        userId: userId,
+        username: username,
+        authToken: authToken
+      };
     } catch (err) {
       throw new err;
     }

@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS games (
 CREATE TABLE IF NOT EXISTS users (
    id INT AUTO_INCREMENT PRIMARY KEY,
    username VARCHAR(255),
+   auth_token VARCHAR(255),
    created_on DATETIME NOT NULL
 );
 

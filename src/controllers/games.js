@@ -14,7 +14,7 @@ async function createGame(req, res) {
     res.json(game);
   } catch (err) {
     console.log(err);
-    res.status(500);
+    res.send(500);
   }
 }
 
@@ -28,7 +28,7 @@ async function completeGame(req, res) {
     res.json(game)
   } catch(err) {
     console.log(err);
-    res.status(500);
+    res.send(500);
   }
 }
 
@@ -40,7 +40,7 @@ async function getGame(req, res) {
     res.json(game);
   } catch(err) {
     console.log(err);
-    res.status(500);
+    res.send(500);
   }
 }
 
