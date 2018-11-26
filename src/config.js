@@ -2,6 +2,7 @@ const env = process.env.NODE_ENV || 'development';
 
 const configuration = {
   'development': {
+    'apiVersion': '1.0',
     'logging': {
       'level': 'dev'
     },

@@ -14,8 +14,10 @@ app.use(morgan(config.logging.level));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
-app.use('/users', users);
-app.use('/games', games);
+let urlPrefix = `/api/v${config.apiVersion}`;
+
+app.use(`${urlPrefix}/users`, users);
+app.use(`${urlPrefix}/games`, games);
 
 const server = app.listen(config.web.port, config.web.host, () => {
   const host = server.address().address;
