@@ -1,11 +1,17 @@
 const app = require('express').Router();
+
+const Authenticator = require('../authenticator');
 const User = require('../models/user');
 
-app.get('/', availableUsers);
+app.get('/', Authenticator.auth, availableUsers);
 app.get('/:username', checkUsernameAvailability);
 app.post('/', register);
 
 async function availableUsers(req, res) {
+  console.log('*********************************************************');
+  console.log(req.user);
+  console.log('*********************************************************');
+
   try {
     let users = await User.getAvailableUsers();
     res.json(users);

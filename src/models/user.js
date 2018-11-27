@@ -22,6 +22,11 @@ const createUserSql = `
   INSERT INTO users (username, auth_token, created_on)
     VALUES (?, ?, NOW())
 `;
+const userByApiKeySql = `
+  SELECT *
+  FROM users u
+  WHERE u.auth_token = ?
+`;
 
 class User {
   static async getAvailableUsers() {
@@ -42,7 +47,7 @@ class User {
         return results[0];
       }
     } catch (err) {
-      throw new err;
+      throw err;
     }
   }
 
@@ -58,6 +63,20 @@ class User {
         username: username,
         authToken: authToken
       };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async findByApiKey(apiKey) {
+    try {
+      let results = await conn.query(userByApiKeySql, apiKey);
+
+      if (results.length === 0) {
+        return null;
+      }
+
+      return results[0];
     } catch (err) {
       throw err;
     }
