@@ -1,10 +1,11 @@
 const app = require('express').Router();
 
+const Authenticator = require('../authenticator');
 const Game = require('../models/game');
 
-app.post('/', createGame);
-app.put('/:gameId', completeGame);
-app.get('/:gameId', getGame);
+app.post('/', Authenticator.auth, createGame);
+app.put('/:gameId', Authenticator.auth, completeGame);
+app.get('/:gameId', Authenticator.auth, getGame);
 
 async function createGame(req, res) {
   let gameMembers = req.body["user_ids"];
@@ -20,7 +21,7 @@ async function createGame(req, res) {
 
 async function completeGame(req, res) {
   let gameId = req.params.gameId;
-  let userId = req.body["score"]["userId"];
+  let userId = req.user.id;
   let score = req.body["score"]["score"];
 
   try {
