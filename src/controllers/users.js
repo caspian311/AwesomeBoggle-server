@@ -25,11 +25,11 @@ async function checkUsernameAvailability(req, res) {
     if (user) {
       res.status(409);
       res.json({
-        message: "Username is not available."
+        isAvailable: false
       });
     } else {
       res.json({
-        message: "Username is available."
+        isAvailable: true
       });
     }
   } catch (err) {
