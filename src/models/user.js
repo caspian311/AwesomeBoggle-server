@@ -3,7 +3,7 @@ const uuid = require('uuid/v1');
 const conn = require('../db');
 
 const availableUsersSql = `
-  SELECT u.*
+  SELECT u.id as id, u.username as username
   FROM users u
   WHERE u.id NOT IN (
     SELECT u.id
@@ -59,9 +59,9 @@ class User {
       let userId = results.insertId;
 
       return {
-        userId: userId,
+        id: userId,
         username: username,
-        authToken: authToken
+        auth_token: authToken
       };
     } catch (err) {
       throw err;
