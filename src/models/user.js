@@ -12,6 +12,7 @@ const availableUsersSql = `
     AND s.user_id = u.id
     AND g.finished = 0
   )
+  AND u.id NOT IN (?)
 `;
 const usernameAvailabilitySql = `
   SELECT *
@@ -29,9 +30,9 @@ const userByApiKeySql = `
 `;
 
 class User {
-  static async getAvailableUsers() {
+  static async getAvailableUsers(currentUserId) {
     try {
-      return await conn.query(availableUsersSql);
+      return await conn.query(availableUsersSql, currentUserId);
     } catch (err) {
       throw err;
     }

@@ -8,8 +8,10 @@ app.get('/:username', checkUsernameAvailability);
 app.post('/', register);
 
 async function availableUsers(req, res) {
+  let currentUserId = req.user.id;
+  
   try {
-    let users = await User.getAvailableUsers();
+    let users = await User.getAvailableUsers(currentUserId);
     res.json(users);
   } catch (err) {
     console.log(err);

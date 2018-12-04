@@ -39,7 +39,7 @@ class Game {
 
       return { game: { gameId: gameId } };
     } catch(err) {
-      throw new err;
+      throw err;
     }
   }
 
@@ -49,7 +49,7 @@ class Game {
       await conn.query(updateGameSql, [ gameId ]);
       return await conn.query(getGameSql, [ gameId ]);
     } catch(err) {
-      throw new err;
+      throw err;
     }
   }
 
@@ -68,7 +68,7 @@ class Game {
         })
       };
     } catch (err) {
-      throw new err;
+      throw err;
     }
   }
 }

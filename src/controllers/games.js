@@ -8,7 +8,7 @@ app.put('/:gameId', Authenticator.auth, completeGame);
 app.get('/:gameId', Authenticator.auth, getGame);
 
 async function createGame(req, res) {
-  let gameMembers = req.body["user_ids"];
+  let gameMembers = req.body["userIds"];
 
   try {
     let game = await Game.createGame(gameMembers);
