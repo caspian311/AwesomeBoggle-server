@@ -1,9 +1,10 @@
 const conn = require('../db');
+import GameMaker from './gameMaker'
 
 const createScore = `INSERT INTO scores (game_id, user_id, score) VALUES ?`;
 const createGameSql = `
-INSERT INTO games (created_on, finished)
-values (NOW(), 0)
+INSERT INTO games (grid, created_on, finished)
+values (?, NOW(), 0)
 `;
 const updateScoreSql = `
   UPDATE scores
@@ -29,17 +30,19 @@ const getGameSql = `
 
 class Game {
   static async createGame(gameMembers) {
+    const grid = new GameMaker().generateGrid();
+
     try{
-      let createdGameResults = await conn.query(createGameSql);
+      let createdGameResults = await conn.query(createGameSql, grid);
 
       let gameId = createdGameResults.insertId;
       let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
 
       await conn.query(createScore, [scoreData]);
 
-      return { game: { gameId: gameId } };
+      return { gameId: gameId, grid: grid };
     } catch(err) {
-      throw new err;
+      throw err;
     }
   }
 
@@ -49,7 +52,7 @@ class Game {
       await conn.query(updateGameSql, [ gameId ]);
       return await conn.query(getGameSql, [ gameId ]);
     } catch(err) {
-      throw new err;
+      throw err;
     }
   }
 
@@ -68,7 +71,7 @@ class Game {
         })
       };
     } catch (err) {
-      throw new err;
+      throw err;
     }
   }
 }

@@ -6,6 +6,7 @@ USE awesomeboggle;
 
 CREATE TABLE IF NOT EXISTS games (
    id INT AUTO_INCREMENT PRIMARY KEY,
+   grid VARCHAR(20) NOT NULL,
    created_on DATETIME NOT NULL,
    finished INT DEFAULT 0
 );

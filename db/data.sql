@@ -26,8 +26,8 @@ INSERT INTO users (username, auth_token, created_on)
   VALUES ('peter', '60e6a2a0-f0b3-11e8-9aa2-e7e59d5339f5', NOW());
 SET @user5 = LAST_INSERT_ID();
 
-INSERT INTO games (created_on, finished)
-  values (@hour_ago, 1);
+INSERT INTO games (grid, created_on, finished)
+  values ("ABCDEFHIJKLMNOPQ", @hour_ago, 1);
 SET @game1 = LAST_INSERT_ID();
 
 INSERT INTO scores (user_id, game_id, score)
@@ -36,8 +36,8 @@ INSERT INTO scores (user_id, game_id, score)
 INSERT INTO scores (user_id, game_id, score)
   values (@user2, @game1, 20);
 
-INSERT INTO games (created_on, finished)
-  values (NOW(), 0);
+INSERT INTO games (grid, created_on, finished)
+  values ("ZYXWVUTSRQPONMLK", NOW(), 0);
 SET @game2 = LAST_INSERT_ID();
 
 INSERT INTO scores (user_id, game_id, score)

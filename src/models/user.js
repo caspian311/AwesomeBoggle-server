@@ -3,7 +3,7 @@ const uuid = require('uuid/v1');
 const conn = require('../db');
 
 const availableUsersSql = `
-  SELECT u.*
+  SELECT u.id as id, u.username as username
   FROM users u
   WHERE u.id NOT IN (
     SELECT u.id
@@ -12,6 +12,7 @@ const availableUsersSql = `
     AND s.user_id = u.id
     AND g.finished = 0
   )
+  AND u.id NOT IN (?)
 `;
 const usernameAvailabilitySql = `
   SELECT *
@@ -22,11 +23,16 @@ const createUserSql = `
   INSERT INTO users (username, auth_token, created_on)
     VALUES (?, ?, NOW())
 `;
+const userByApiKeySql = `
+  SELECT *
+  FROM users u
+  WHERE u.auth_token = ?
+`;
 
 class User {
-  static async getAvailableUsers() {
+  static async getAvailableUsers(currentUserId) {
     try {
-      return await conn.query(availableUsersSql);
+      return await conn.query(availableUsersSql, currentUserId);
     } catch (err) {
       throw err;
     }
@@ -42,7 +48,7 @@ class User {
         return results[0];
       }
     } catch (err) {
-      throw new err;
+      throw err;
     }
   }
 
@@ -54,10 +60,24 @@ class User {
       let userId = results.insertId;
 
       return {
-        userId: userId,
+        id: userId,
         username: username,
-        authToken: authToken
+        auth_token: authToken
       };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  static async findByApiKey(apiKey) {
+    try {
+      let results = await conn.query(userByApiKeySql, apiKey);
+
+      if (results.length === 0) {
+        return null;
+      }
+
+      return results[0];
     } catch (err) {
       throw err;
     }
