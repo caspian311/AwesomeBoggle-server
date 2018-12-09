@@ -60,7 +60,7 @@ class Game {
     try {
       let results = await conn.query(getGameSql, [ gameId ]);
       if (results.length === 0) {
-        return {};
+        return null;
       }
 
       return {

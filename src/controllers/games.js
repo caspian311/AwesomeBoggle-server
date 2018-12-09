@@ -38,7 +38,11 @@ async function getGame(req, res) {
 
   try {
     let game = await Game.getGame(gameId);
-    res.json(game);
+    if (game == null) {
+      res.send(404);
+    } else {
+      res.json(game);
+    }
   } catch(err) {
     console.log(err);
     res.send(500);
