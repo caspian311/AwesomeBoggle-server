@@ -2,10 +2,12 @@ const app = require('express').Router();
 
 const Authenticator = require('../authenticator');
 const Game = require('../models/game');
+import Invitation from '../models/invitation';
 
 app.post('/', Authenticator.auth, createGame);
 app.put('/:gameId', Authenticator.auth, completeGame);
 app.get('/:gameId', Authenticator.auth, getGame);
+app.post('/:gameId/invitations', Authenticator.auth, inviteOpponents);
 
 async function createGame(req, res) {
   let gameMembers = req.body["userIds"];
@@ -49,5 +51,22 @@ async function getGame(req, res) {
     res.sendStatus(500);
   }
 }
+
+async function inviteOpponents(req, res) {
+  let gameId = req.params['gameId'];
+  let opponentUserId = req.body['userId'];
+
+  let game = await Game.getGame(gameId);
+
+  if (game) {
+    Invitation.inviteOpponent(gameId, opponentUserId);
+    let invitations = await Invitation.findByGameId(gameId);
+    res.send(invitations);
+  } else {
+    console.log("looked for game: " + gameId + ", but couldn't find it");
+    res.sendStatus(404);
+  }
+}
+
 
 module.exports = app;

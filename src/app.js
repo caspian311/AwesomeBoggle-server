@@ -8,7 +8,6 @@ const passport = require('passport');
 const config = require('./config');
 const users = require('./controllers/users');
 const games = require('./controllers/games');
-const invitations = require('./controllers/invitations');
 
 const Authenticator = require('./authenticator');
 
@@ -24,6 +23,5 @@ let urlPrefix = `/api/v${config.apiVersion}`;
 
 app.use(`${urlPrefix}/users`, users);
 app.use(`${urlPrefix}/games`, games);
-app.use(`${urlPrefix}/invitations`, invitations);
 
 module.exports = app;
