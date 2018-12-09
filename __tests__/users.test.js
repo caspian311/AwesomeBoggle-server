@@ -24,15 +24,38 @@ describe('users', () => {
 
   describe('POST /users', () => {
     describe('with good data', () => {
-      it('should return create a user', (done) => {
-        let username = 'new_user';
+      it('should succeed', () => {
+        let username = 'new_user1';
 
         return request(app).post('/api/v1.0/users')
           .send({
             username: username
           })
-          .then(response => {
-            expect(response.statusCode).toBe(200);
+          .expect(200)
+      });
+
+      it('should return created user', () => {
+        let username = 'new_user2';
+
+        return request(app).post('/api/v1.0/users')
+          .send({
+            username: username
+          })
+          .expect((res) => {
+              expect(res.body.username).toEqual(username);
+              expect(res.body.id).toBeGreaterThan(3);
+              expect(res.body.auth_token.length).toBeGreaterThan(5);
+          })
+      });
+
+      it('should create a user', (done) => {
+        let username = 'new_user3';
+
+        return request(app).post('/api/v1.0/users')
+          .send({
+            username: username
+          })
+          .then(() => {
             User.findByUsername(username).then((user) => {
               expect(user.username).toEqual(username);
               done();
