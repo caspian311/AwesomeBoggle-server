@@ -18,6 +18,7 @@ conn.connect((err) => {
   console.log("Database connection made");
 });
 
+// TODO: fix this so the tests can still run w/ it
 // conn.on('error', function(err) {
 //   console.log("[mysql error]", err);
 //   throw err;

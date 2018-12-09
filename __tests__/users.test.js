@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../src/app';
-import conn from '../src/db/internalConnection';
+import conn from '../src/db';
 
 describe('users', () => {
   describe('GET /users/:username', () => {
