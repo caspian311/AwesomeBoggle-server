@@ -14,6 +14,7 @@ async function createGame(req, res) {
 
   try {
     let game = await Game.createGame(gameMembers);
+    game['isReady'] = false;
     res.json(game);
   } catch (err) {
     console.log(err);
@@ -44,7 +45,6 @@ async function getGame(req, res) {
       res.json(game);
     } else {
       res.sendStatus(404);
-
     }
   } catch(err) {
     console.log(err);
