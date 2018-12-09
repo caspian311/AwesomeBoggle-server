@@ -28,6 +28,17 @@
       "no-unused-vars": 1
     }
   },
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/src/*.js"
+    ],
+    "globalTeardown": "./__tests__/config.js",
+    "testMatch": [
+      "**/__tests__/**/*.test.js?(x)"
+    ]
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

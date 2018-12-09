@@ -1,6 +1,5 @@
 import request from 'supertest';
 import app from '../src/app';
-import conn from '../src/db';
 import User from '../src/models/user';
 
 describe('users', () => {
@@ -79,7 +78,34 @@ describe('users', () => {
     });
   });
 
-  afterAll(() => {
-    conn.end();
+  describe('GET /users', () => {
+    describe('without authentication', () => {
+      it('should return a bad request error', () => {
+        return request(app).get('/api/v1.0/users')
+          .expect(401);
+      });
+    });
+
+    describe('with authentication', () => {
+      it('should return a success', () => {
+        return request(app).get('/api/v1.0/users')
+          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .expect(200);
+      });
+
+      it('should return available users', () => {
+        return request(app).get('/api/v1.0/users')
+          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .expect(
+            [
+              { id: 2, username: 'abbi' },
+              { id: 6, username: 'new_user1' },
+              { id: 7, username: 'new_user2' },
+              { id: 8, username: 'new_user3' },
+              { id: 5, username: 'peter' }
+            ]
+          );
+      });
+    });
   });
 });

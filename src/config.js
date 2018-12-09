@@ -21,7 +21,7 @@ const configuration = {
   'test': {
     'apiVersion': '1.0',
     'logging': {
-      'level': 'debug'
+      'level': 'dev'
     },
     'web': {
       'host': '0.0.0.0',
