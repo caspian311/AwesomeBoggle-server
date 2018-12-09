@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../src/app';
 import User from '../src/models/user';
+import conn from '../src/db';
 
 describe('users', () => {
   describe('GET /users/:username', () => {
@@ -107,5 +108,9 @@ describe('users', () => {
           );
       });
     });
+  });
+
+  afterAll(() => {
+    conn.end();
   });
 });
