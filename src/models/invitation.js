@@ -3,7 +3,7 @@ const conn = require('../db');
 const createInvitationSQL = `
   INSERT INTO
     invitations (game_id, user_id)
-    VALUES (?, ?)
+    VALUES ?
 `;
 const allInvitationsSQL = `
   SELECT game_id, user_id
@@ -23,8 +23,10 @@ class Invitation {
     return allInvitations;
   }
 
-  static async inviteOpponent(gameId, userId) {
-    return await conn.query(createInvitationSQL, [ gameId, userId ]);
+  static async inviteOpponents(gameId, userIds) {
+    let scoreData = userIds.map(userId => [ gameId, userId ]);
+    
+    return await conn.query(createInvitationSQL, [ scoreData ]);
   }
 
   static async findByGameId(gameId) {

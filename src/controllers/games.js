@@ -54,12 +54,12 @@ async function getGame(req, res) {
 
 async function inviteOpponents(req, res) {
   let gameId = req.params['gameId'];
-  let opponentUserId = req.body['userId'];
+  let opponentUserIds = req.body['userIds'];
 
   let game = await Game.getGame(gameId);
 
   if (game) {
-    Invitation.inviteOpponent(gameId, opponentUserId);
+    Invitation.inviteOpponents(gameId, opponentUserIds);
     let invitations = await Invitation.findByGameId(gameId);
     res.send(invitations);
   } else {
