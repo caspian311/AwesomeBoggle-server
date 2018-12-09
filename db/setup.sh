@@ -12,7 +12,7 @@ then
 fi
 SETUP_DATABASE_FILE=${basedir}/database.sql
 
-echo "Setting database ${DATABASE_NAME} ... (running $SETUP_DATABASE_FILE)"
+echo "Setting database ${DATABASE_NAME}"
 mysql -uroot -e "set @db='${DATABASE_NAME}'; source ${SETUP_DATABASE_FILE};"
 
 files=( user.sql schema.sql data.sql )
