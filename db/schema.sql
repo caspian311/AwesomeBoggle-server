@@ -20,3 +20,11 @@ CREATE TABLE IF NOT EXISTS scores (
    FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE,
    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS invitations (
+   game_id INT NOT NULL,
+   user_id INT NOT NULL,
+   PRIMARY KEY (game_id, user_id),
+   FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE,
+   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

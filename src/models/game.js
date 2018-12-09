@@ -3,8 +3,9 @@ import GameMaker from './gameMaker'
 
 const createScore = `INSERT INTO scores (game_id, user_id, score) VALUES ?`;
 const createGameSql = `
-INSERT INTO games (grid, created_on, finished)
-values (?, NOW(), 0)
+  INSERT INTO
+    games (grid, created_on, finished)
+    VALUES (?, NOW(), 0)
 `;
 const updateScoreSql = `
   UPDATE scores
@@ -32,47 +33,35 @@ class Game {
   static async createGame(gameMembers) {
     const grid = new GameMaker().generateGrid();
 
-    try{
-      let createdGameResults = await conn.query(createGameSql, grid);
+    let createdGameResults = await conn.query(createGameSql, grid);
 
-      let gameId = createdGameResults.insertId;
-      let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
+    let gameId = createdGameResults.insertId;
+    let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
 
-      await conn.query(createScore, [scoreData]);
+    await conn.query(createScore, [scoreData]);
 
-      return { gameId: gameId, grid: grid };
-    } catch(err) {
-      throw err;
-    }
+    return { gameId: gameId, grid: grid };
   }
 
   static async completeGame(gameId, userId, score) {
-    try {
-      await conn.query(updateScoreSql, [ score, gameId, userId ]);
-      await conn.query(updateGameSql, [ gameId ]);
-      return await conn.query(getGameSql, [ gameId ]);
-    } catch(err) {
-      throw err;
-    }
+    await conn.query(updateScoreSql, [ score, gameId, userId ]);
+    await conn.query(updateGameSql, [ gameId ]);
+    return await conn.query(getGameSql, [ gameId ]);
   }
 
   static async getGame(gameId) {
-    try {
-      let results = await conn.query(getGameSql, [ gameId ]);
-      if (results.length === 0) {
-        return null;
-      }
-
-      return {
-        id: results[0].gameId,
-        finished: results[0].finished,
-        scores: results.map((score) => {
-          return { userId: score.userId, username: score.username, score: score.score };
-        })
-      };
-    } catch (err) {
-      throw err;
+    let results = await conn.query(getGameSql, [ gameId ]);
+    if (results.length === 0) {
+      return null;
     }
+
+    return {
+      id: results[0].gameId,
+      finished: results[0].finished,
+      scores: results.map((score) => {
+        return { userId: score.userId, username: score.username, score: score.score };
+      })
+    };
   }
 }
 
