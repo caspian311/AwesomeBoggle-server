@@ -18,8 +18,9 @@ conn.connect((err) => {
   console.log("Database connection made");
 });
 
-conn.on('error', function(err) {
-  console.log("[mysql error]", err);
-});
+// conn.on('error', function(err) {
+//   console.log("[mysql error]", err);
+//   throw err;
+// });
 
 module.exports = conn;
