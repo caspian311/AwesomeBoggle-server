@@ -9,13 +9,13 @@ app.post('/', register);
 
 async function availableUsers(req, res) {
   let currentUserId = req.user.id;
-  
+
   try {
     let users = await User.getAvailableUsers(currentUserId);
     res.json(users);
   } catch (err) {
     console.log(err);
-    res.send(500);
+    res.sendStatus(500);
   }
 }
 
@@ -36,7 +36,7 @@ async function checkUsernameAvailability(req, res) {
     }
   } catch (err) {
     console.log(err);
-    res.send(500);
+    res.sendStatus(500);
   }
 }
 
@@ -56,7 +56,7 @@ async function register(req, res) {
     }
   } catch (err) {
     console.log(err);
-    res.send(500);
+    res.sendStatus(500);
   }
 }
 

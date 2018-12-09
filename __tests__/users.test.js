@@ -40,6 +40,20 @@ describe('users', () => {
           });
       });
     });
+
+    describe('with unavailable username', () => {
+      it('should fail', () => {
+        let username = 'matt';
+
+        return request(app).post('/api/v1.0/users')
+          .send({
+            username: username
+          })
+          .then(response => {
+            expect(response.statusCode).toBe(409);
+          });
+      });
+    });
   });
 
   afterAll(() => {
