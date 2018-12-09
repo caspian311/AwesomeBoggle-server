@@ -9,6 +9,12 @@ const allInvitationsSQL = `
   SELECT game_id, user_id
   FROM invitations
 `;
+const invitationsForGameSQL = `
+  SELECT i.game_id as gameId, i.user_id as userId, u.username as username
+  FROM invitations i, users u
+  WHERE u.id = i.user_id
+  AND i.game_id = ?
+`;
 
 class Invitation {
   static async getAll() {
@@ -18,8 +24,11 @@ class Invitation {
   }
 
   static async inviteOpponent(gameId, userId) {
-    let invite = await conn.query(createInvitationSQL, [ gameId, userId ]);
-    console.log(invite);
+    return await conn.query(createInvitationSQL, [ gameId, userId ]);
+  }
+
+  static async findByGameId(gameId) {
+    return await conn.query(invitationsForGameSQL, gameId);
   }
 }
 

@@ -14,8 +14,10 @@ async function inviteOpponents(req, res) {
 
   if (game) {
     Invitation.inviteOpponent(gameId, opponentUserId);
-    res.sendStatus(200);
+    let invitations = await Invitation.findByGameId(gameId);
+    res.send(invitations);
   } else {
+    console.log("looked for game: " + gameId + ", but couldn't find it");
     res.sendStatus(404);
   }
 }

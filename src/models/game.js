@@ -18,14 +18,19 @@ const updateGameSql = `
   SET finished = 1
   WHERE id = ?
 `;
+// const getGameSql = `
+//   SELECT g.id as gameId, g.finished as finished, g.created_on as created_on,
+//     u.id as userId, u.username as username,
+//     s.score as score
+//   FROM games g, users u, scores s
+//   WHERE g.id = s.game_id
+//   AND u.id = s.user_id
+//   AND g.id = ?
+// `;
 const getGameSql = `
-  SELECT g.id as gameId, g.finished as finished, g.created_on as created_on,
-    u.id as userId, u.username as username,
-    s.score as score
-  FROM games g, users u, scores s
-  WHERE g.id = s.game_id
-  AND u.id = s.user_id
-  AND g.id = ?
+  SELECT g.id as gameId
+  FROM games g
+  WHERE g.id = ?
 `;
 
 
@@ -36,9 +41,9 @@ class Game {
     let createdGameResults = await conn.query(createGameSql, grid);
 
     let gameId = createdGameResults.insertId;
-    let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
-
-    await conn.query(createScore, [scoreData]);
+    // let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
+    //
+    // await conn.query(createScore, [scoreData]);
 
     return { gameId: gameId, grid: grid };
   }
@@ -50,7 +55,7 @@ class Game {
   }
 
   static async getGame(gameId) {
-    let results = await conn.query(getGameSql, [ gameId ]);
+    let results = await conn.query(getGameSql, gameId);
     if (results.length === 0) {
       return null;
     }
