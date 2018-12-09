@@ -1,9 +1,3 @@
-
-DROP DATABASE IF EXISTS awesomeboggle;
-CREATE DATABASE awesomeboggle;
-
-USE awesomeboggle;
-
 CREATE TABLE IF NOT EXISTS games (
    id INT AUTO_INCREMENT PRIMARY KEY,
    grid VARCHAR(20) NOT NULL,

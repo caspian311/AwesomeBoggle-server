@@ -1,5 +1,3 @@
-USE awesomeboggle;
-
 DELETE FROM users;
 DELETE FROM games;
 DELETE FROM scores;
