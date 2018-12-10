@@ -98,6 +98,14 @@ describe('inventations', () => {
           .set('Authorization', `Api-Key ${testUser.authToken}`)
           .expect(200);
       });
+
+      describe('for games that don\'t exist', () => {
+        it('should return a bad request', () => {
+          return request(app).put('/api/v1.0/games/998877/invitations')
+            .set('Authorization', `Api-Key ${testUser.authToken}`)
+            .expect(404);
+        });
+      });
     });
   });
 
