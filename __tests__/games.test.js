@@ -89,6 +89,12 @@ describe('games', () => {
           it('should return an unready game', () => {
             return Invitation.inviteOpponents(testGameId, [1, 2])
               .then(() => {
+                return Invitation.accept(testGameId, 1);
+              })
+              .then(() => {
+                return Invitation.accept(testGameId, 2);
+              })
+              .then(() => {
                 return request(app)
                   .get(`/api/v1.0/games/${testGameId}`)
                   .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')

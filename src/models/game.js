@@ -1,7 +1,8 @@
 const conn = require('../db');
-import GameMaker from './gameMaker'
+import GameMaker from './gameMaker';
+import Invitation from './invitation';
 
-const createScore = `INSERT INTO scores (game_id, user_id, score) VALUES ?`;
+// const createScore = `INSERT INTO scores (game_id, user_id, score) VALUES ?`;
 const createGameSql = `
   INSERT INTO
     games (grid, created_on, finished)
@@ -35,15 +36,11 @@ const getGameSql = `
 
 
 class Game {
-  static async createGame(gameMembers) {
-    const grid = new GameMaker().generateGrid();
+  static async createGame() {
+    let grid = new GameMaker().generateGrid();
 
     let createdGameResults = await conn.query(createGameSql, grid);
-
     let gameId = createdGameResults.insertId;
-    // let scoreData = gameMembers.map(memberId => [gameId, memberId, 0]);
-    //
-    // await conn.query(createScore, [scoreData]);
 
     return { gameId: gameId, grid: grid };
   }
@@ -55,15 +52,18 @@ class Game {
   }
 
   static async getGame(gameId) {
-    let results = await conn.query(getGameSql, gameId);
-    if (results.length === 0) {
+    let games = await conn.query(getGameSql, gameId);
+    if (games.length === 0) {
       return null;
     }
+    let game = games[0];
+
+    let invitations = await Invitation.findByGameId(gameId);
 
     return {
-      id: results[0].gameId,
-      grid: results[0].grid,
-      isReady: false
+      id: game.gameId,
+      grid: game.grid,
+      isReady: invitations.every(invitation => invitation.accepted === 1)
     };
   }
 }
