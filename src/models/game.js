@@ -2,7 +2,6 @@ const conn = require('../db');
 import GameMaker from './gameMaker';
 import Invitation from './invitation';
 
-// const createScore = `INSERT INTO scores (game_id, user_id, score) VALUES ?`;
 const createGameSql = `
   INSERT INTO
     games (grid, created_on, finished)
@@ -19,15 +18,6 @@ const updateGameSql = `
   SET finished = 1
   WHERE id = ?
 `;
-// const getGameSql = `
-//   SELECT g.id as gameId, g.finished as finished, g.created_on as created_on,
-//     u.id as userId, u.username as username,
-//     s.score as score
-//   FROM games g, users u, scores s
-//   WHERE g.id = s.game_id
-//   AND u.id = s.user_id
-//   AND g.id = ?
-// `;
 const getGameSql = `
   SELECT g.id as gameId, g.grid as grid
   FROM games g
