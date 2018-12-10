@@ -15,7 +15,7 @@ const availableUsersSql = `
   AND u.id NOT IN (?)
 `;
 const usernameAvailabilitySql = `
-  SELECT *
+  SELECT u.id as id, u.username as username, u.auth_token as authToken
   FROM users u
   WHERE u.username = ?
 `;
@@ -39,48 +39,36 @@ class User {
   }
 
   static async findByUsername(username) {
-    try {
-      let results = await conn.query(usernameAvailabilitySql, username);
+    let results = await conn.query(usernameAvailabilitySql, username);
 
-      if (results.length === 0) {
-        return null;
-      } else {
-        return results[0];
-      }
-    } catch (err) {
-      throw err;
+    if (results.length === 0) {
+      return null;
+    } else {
+      return results[0];
     }
   }
 
   static async create(username) {
     let authToken = uuid();
 
-    try {
-      let results = await conn.query(createUserSql, [username, authToken]);
-      let userId = results.insertId;
+    let results = await conn.query(createUserSql, [username, authToken]);
+    let userId = results.insertId;
 
-      return {
-        id: userId,
-        username: username,
-        auth_token: authToken
-      };
-    } catch (err) {
-      throw err;
-    }
+    return {
+      id: userId,
+      username: username,
+      auth_token: authToken
+    };
   }
 
   static async findByApiKey(apiKey) {
-    try {
-      let results = await conn.query(userByApiKeySql, apiKey);
+    let results = await conn.query(userByApiKeySql, apiKey);
 
-      if (results.length === 0) {
-        return null;
-      }
-
-      return results[0];
-    } catch (err) {
-      throw err;
+    if (results.length === 0) {
+      return null;
     }
+
+    return results[0];
   }
 }
 

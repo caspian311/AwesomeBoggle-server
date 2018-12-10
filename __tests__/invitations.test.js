@@ -3,9 +3,11 @@ import app from '../src/app';
 import conn from '../src/db';
 import Game from '../src/models/game';
 import Invitation from '../src/models/invitation';
+import User from '../src/models/user';
 
 describe('inventations', () => {
   var testGameId = 0;
+  var testUser = null;
 
   beforeEach(() => {
     return Game.createGame().then((game) => {
@@ -13,9 +15,15 @@ describe('inventations', () => {
     });
   });
 
+  beforeEach(() => {
+    return User.findByUsername('matt').then(user => {
+      testUser = user;
+    });
+  });
+
   describe('POST /games/:gameId/invitations', () => {
     describe('unauthorized requests', () => {
-      it('should return a success', () => {
+      it('should return a bad request', () => {
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
           .send({
             userId: 2
@@ -29,7 +37,7 @@ describe('inventations', () => {
     describe('for invalid games', () => {
       it('should return an error', () => {
         return request(app).post('/api/v1.0/games/12345/invitations')
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .send({
             userIds: [ '9999' ]
           })
@@ -40,9 +48,9 @@ describe('inventations', () => {
     });
 
     describe('for valid games', () => {
-      it.only('should return a success', () => {
+      it('should return a success', () => {
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .send({
             userIds: [ '2' ]
           })
@@ -52,7 +60,7 @@ describe('inventations', () => {
       it('should create an invitation', async () => {
         let originalInvitations = await Invitation.getAll();
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .send({
             userIds: [ '2' ]
           })
@@ -64,14 +72,31 @@ describe('inventations', () => {
 
       it('should return the invitation', async () => {
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .send({
             userIds: [ '2', '5' ]
           })
           .expect([
-            { gameId: testGameId, userId: 2, username: 'abbi' },
-            { gameId: testGameId, userId: 5, username: 'peter' }
+            { gameId: testGameId, userId: 2, username: 'abbi', accepted: 0 },
+            { gameId: testGameId, userId: 5, username: 'peter', accepted: 0 }
           ]);
+      });
+    });
+  });
+
+  describe('PUT /games/:gameId/invitations', () => {
+    describe('unauthenticated requests', () => {
+      it('should return a bad request', () => {
+        return request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
+          .expect(401);
+      });
+    });
+
+    describe('authenticated requests', () => {
+      it('should return a success', () => {
+        return request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
+          .expect(200);
       });
     });
   });

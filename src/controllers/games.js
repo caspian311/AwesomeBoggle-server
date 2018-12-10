@@ -8,6 +8,7 @@ app.post('/', Authenticator.auth, createGame);
 app.put('/:gameId', Authenticator.auth, completeGame);
 app.get('/:gameId', Authenticator.auth, getGame);
 app.post('/:gameId/invitations', Authenticator.auth, inviteOpponents);
+app.put('/:gameId/invitations', Authenticator.auth, acceptInvite);
 
 async function createGame(req, res) {
   let gameMembers = req.body["userIds"];
@@ -67,6 +68,14 @@ async function inviteOpponents(req, res) {
     console.log("looked for game: " + gameId + ", but couldn't find it");
     res.sendStatus(404);
   }
+}
+
+async function acceptInvite(req, res) {
+  let gameId = req.params['gameId'];
+  let userId = req.user.id;
+
+  await Invitation.accept(gameId, userId)
+  res.sendStatus(200);
 }
 
 
