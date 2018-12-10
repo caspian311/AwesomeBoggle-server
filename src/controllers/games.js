@@ -57,6 +57,7 @@ async function inviteOpponents(req, res) {
   let opponentUserIds = req.body['userIds'];
 
   let game = await Game.getGame(gameId);
+  console.log("using gameId: " + gameId)
 
   if (game) {
     Invitation.inviteOpponents(gameId, opponentUserIds);

@@ -28,7 +28,7 @@ const updateGameSql = `
 //   AND g.id = ?
 // `;
 const getGameSql = `
-  SELECT g.id as gameId
+  SELECT g.id as gameId, g.grid as grid
   FROM games g
   WHERE g.id = ?
 `;
@@ -62,10 +62,8 @@ class Game {
 
     return {
       id: results[0].gameId,
-      finished: results[0].finished,
-      scores: results.map((score) => {
-        return { userId: score.userId, username: score.username, score: score.score };
-      })
+      grid: results[0].grid,
+      isReady: false
     };
   }
 }

@@ -40,7 +40,7 @@ describe('inventations', () => {
     });
 
     describe('for valid games', () => {
-      it('should return a success', () => {
+      it.only('should return a success', () => {
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
           .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
           .send({
