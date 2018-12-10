@@ -93,17 +93,29 @@ describe('inventations', () => {
     });
 
     describe('authenticated requests', () => {
-      it('should return a success', () => {
-        return request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
-          .set('Authorization', `Api-Key ${testUser.authToken}`)
-          .expect(200);
-      });
-
       describe('for games that don\'t exist', () => {
         it('should return a bad request', () => {
           return request(app).put('/api/v1.0/games/998877/invitations')
             .set('Authorization', `Api-Key ${testUser.authToken}`)
             .expect(404);
+        });
+      });
+
+      describe('for games that you aren\'t invited to', () => {
+        it('should return a bad request', () => {
+          return request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
+            .set('Authorization', `Api-Key ${testUser.authToken}`)
+            .expect(404);
+        });
+      })
+    });
+
+    describe('valid games with invites', () => {
+      it('should return a success', () => {
+        return Invitation.inviteOpponents(testGameId, [testUser.id]).then(() => {
+          return request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
+            .set('Authorization', `Api-Key ${testUser.authToken}`)
+            .expect(200);
         });
       });
     });

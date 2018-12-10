@@ -58,28 +58,31 @@ async function inviteOpponents(req, res) {
   let opponentUserIds = req.body['userIds'];
 
   let game = await Game.getGame(gameId);
-
-  if (game) {
-    Invitation.inviteOpponents(gameId, opponentUserIds);
-    let invitations = await Invitation.findByGameId(gameId);
-    res.send(invitations);
-  } else {
+  if (game == null) {
     res.sendStatus(404);
+    return;
   }
+
+  Invitation.inviteOpponents(gameId, opponentUserIds);
+  let invitations = await Invitation.findByGameId(gameId);
+  res.send(invitations);
 }
 
 async function acceptInvite(req, res) {
   let gameId = req.params['gameId'];
-  let userId = req.user.id;
+  // let userId = req.user.id;
 
   let game = await Game.getGame(gameId);
 
-  if (game) {
-    // await Invitation.accept(gameId, userId)
-    res.sendStatus(200);
-  } else {
+  if (game == null) {
     res.sendStatus(404);
+    return;
   }
+
+  // TODO 404 if not accepting but not invited
+
+  // await Invitation.accept(gameId, userId)
+  res.sendStatus(200);
 }
 
 module.exports = app;
