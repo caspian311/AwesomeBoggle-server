@@ -10,7 +10,7 @@ const allInvitationsSQL = `
   FROM invitations
 `;
 const invitationsForGameSQL = `
-  SELECT i.game_id as gameId, 
+  SELECT i.game_id as gameId,
     i.user_id as userId, u.username as username,
     i.accepted as accepted
   FROM invitations i, users u

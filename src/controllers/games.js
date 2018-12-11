@@ -70,7 +70,7 @@ async function inviteOpponents(req, res) {
 
 async function acceptInvite(req, res) {
   let gameId = req.params['gameId'];
-  // let userId = req.user.id;
+  let userId = req.user.id;
 
   let game = await Game.getGame(gameId);
 
@@ -79,9 +79,13 @@ async function acceptInvite(req, res) {
     return;
   }
 
-  // TODO 404 if not accepting but not invited
+  let invitesForGame = await Invitation.findByGameId(gameId);
+  if (!invitesForGame.find(invite => invite.userId == userId)) {
+    res.sendStatus(404);
+    return;
+  }
 
-  // await Invitation.accept(gameId, userId)
+  await Invitation.accept(gameId, userId)
   res.sendStatus(200);
 }
 
