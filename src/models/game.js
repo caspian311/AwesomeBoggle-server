@@ -53,7 +53,7 @@ class Game {
     return {
       id: game.gameId,
       grid: game.grid,
-      isReady: invitations.every(invitation => invitation.accepted === 1)
+      isReady: invitations.length > 0 && invitations.every(invitation => invitation.accepted === 1)
     };
   }
 }
