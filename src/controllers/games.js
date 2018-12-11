@@ -1,7 +1,7 @@
 const app = require('express').Router();
 
-const Authenticator = require('../authenticator');
-const Game = require('../models/game');
+import Authenticator from '../authenticator';
+import Game from '../models/game';
 import Invitation from '../models/invitation';
 
 app.post('/', Authenticator.auth, createGame);

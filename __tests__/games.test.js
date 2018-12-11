@@ -61,16 +61,15 @@ describe('games', () => {
           .expect(200);
       });
 
-      it('should return game info', () => {
-        return Invitation.inviteOpponents(testGameId, [1, 2]).then(() => {
-          return request(app)
-            .get(`/api/v1.0/games/${testGameId}`)
-            .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
-            .expect(res => {
-              expect(res.body.id).toBe(testGameId);
-              expect(res.body.grid.length).toEqual(16);
-            });
-        });
+      it('should return game info', async () => {
+        await Invitation.inviteOpponents(testGameId, [1, 2]);
+        return request(app)
+          .get(`/api/v1.0/games/${testGameId}`)
+          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .expect(res => {
+            expect(res.body.id).toBe(testGameId);
+            expect(res.body.grid.length).toEqual(16);
+          });
       });
 
       describe('intially', () => {
@@ -85,34 +84,27 @@ describe('games', () => {
       });
 
       describe('for games with outstanding invitations', () => {
-        it('should return a NOT ready game', () => {
-          return Invitation.inviteOpponents(testGameId, [1, 2]).then(() => {
-            return request(app)
-              .get(`/api/v1.0/games/${testGameId}`)
-              .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
-              .expect(res => {
-                expect(res.body.isReady).toEqual(false);
-              });
-          });
+        it('should return a NOT ready game', async () => {
+          await Invitation.inviteOpponents(testGameId, [1, 2]);
+          return request(app)
+            .get(`/api/v1.0/games/${testGameId}`)
+            .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+            .expect(res => {
+              expect(res.body.isReady).toEqual(false);
+            });
         });
       });
 
       describe('for games that have accepted invitations', () => {
-        it('should return a ready game', () => {
-          return Invitation.inviteOpponents(testGameId, [1, 2])
-            .then(() => {
-              return Invitation.accept(testGameId, 1);
-            })
-            .then(() => {
-              return Invitation.accept(testGameId, 2);
-            })
-            .then(() => {
-              return request(app)
-                .get(`/api/v1.0/games/${testGameId}`)
-                .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
-                .expect(res => {
-                  expect(res.body.isReady).toEqual(true);
-                });
+        it('should return a ready game', async () => {
+          await Invitation.inviteOpponents(testGameId, [1, 2]);
+          await Invitation.accept(testGameId, 1);
+          await Invitation.accept(testGameId, 2);
+          return request(app)
+            .get(`/api/v1.0/games/${testGameId}`)
+            .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+            .expect(res => {
+              expect(res.body.isReady).toEqual(true);
             });
         });
       });
