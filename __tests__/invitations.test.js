@@ -111,25 +111,20 @@ describe('inventations', () => {
     });
 
     describe('valid games with invites', () => {
-      it('should return a success', () => {
-        return Invitation.inviteOpponents(testGameId, [testUser.id]).then(() => {
-          return request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
-            .set('Authorization', `Api-Key ${testUser.authToken}`)
-            .expect(200);
-        });
+      it('should return a success', async () => {
+        await Invitation.inviteOpponents(testGameId, [testUser.id]);
+        return request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
+          .expect(200);
       });
 
-      it('should mark the invite as accepted', (done) => {
-        return Invitation.inviteOpponents(testGameId, [testUser.id]).then(() => {
-          return request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
-            .set('Authorization', `Api-Key ${testUser.authToken}`);
-        }).then(() => {
-          return Invitation.findByGameId(testGameId);
-        }).then((invites) => {
-          let invite = invites.filter(invite => invite.userId === testUser.id)[0]
-          expect(invite.accepted).toBe(1);
-          done();
-        });
+      it('should mark the invite as accepted', async () => {
+        await Invitation.inviteOpponents(testGameId, [testUser.id]);
+        await request(app).put(`/api/v1.0/games/${testGameId}/invitations`)
+          .set('Authorization', `Api-Key ${testUser.authToken}`);
+        let invites = await Invitation.findByGameId(testGameId);
+        let invite = invites.filter(invite => invite.userId === testUser.id)[0]
+        expect(invite.accepted).toBe(1);
       });
     });
   });
