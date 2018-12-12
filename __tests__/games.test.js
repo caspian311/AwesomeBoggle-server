@@ -3,8 +3,17 @@ import app from '../src/app';
 import conn from '../src/db';
 import Game from '../src/models/game';
 import Invitation from '../src/models/invitation';
+import User from '../src/models/user';
 
 describe('games', () => {
+  var testUser = null;
+
+  beforeEach(() => {
+    return User.findByUsername('matt').then(user => {
+      testUser = user;
+    });
+  });
+
   describe('POST /api/v1.0/games', () => {
     describe('for unauthenticated users', () => {
       it('should return a bad request', () => {
@@ -18,14 +27,14 @@ describe('games', () => {
       it('should return a success', () => {
         return request(app)
           .post('/api/v1.0/games')
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .expect(200);
       });
 
       it('should return a success', () => {
         return request(app)
           .post('/api/v1.0/games')
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .expect(res => {
             expect(res.body.gameId).toBeGreaterThan(2);
             expect(res.body.grid.length).toEqual(16);
@@ -44,11 +53,19 @@ describe('games', () => {
       });
     });
 
+    describe('for unauthenticated users', () => {
+      it('should return a bad request', () => {
+        return request(app)
+          .get(`/api/v1.0/games/${testGameId}`)
+          .expect(401);
+      });
+    });
+
     describe('for games that don\'t exist', () => {
       it('should return a bad request', () => {
         return request(app)
           .get('/api/v1.0/games/99999')
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .expect(404);
       });
     });
@@ -57,7 +74,7 @@ describe('games', () => {
       it('should return a success', () => {
         return request(app)
           .get(`/api/v1.0/games/${testGameId}`)
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .expect(200);
       });
 
@@ -65,7 +82,7 @@ describe('games', () => {
         await Invitation.inviteOpponents(testGameId, [1, 2]);
         return request(app)
           .get(`/api/v1.0/games/${testGameId}`)
-          .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
           .expect(res => {
             expect(res.body.id).toBe(testGameId);
             expect(res.body.grid.length).toEqual(16);
@@ -76,7 +93,7 @@ describe('games', () => {
         it('should return a NOT ready game', () => {
           return request(app)
             .get(`/api/v1.0/games/${testGameId}`)
-            .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+            .set('Authorization', `Api-Key ${testUser.authToken}`)
             .expect(res => {
               expect(res.body.isReady).toEqual(false);
           });
@@ -88,7 +105,7 @@ describe('games', () => {
           await Invitation.inviteOpponents(testGameId, [1, 2]);
           return request(app)
             .get(`/api/v1.0/games/${testGameId}`)
-            .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+            .set('Authorization', `Api-Key ${testUser.authToken}`)
             .expect(res => {
               expect(res.body.isReady).toEqual(false);
             });
@@ -102,11 +119,48 @@ describe('games', () => {
           await Invitation.accept(testGameId, 2);
           return request(app)
             .get(`/api/v1.0/games/${testGameId}`)
-            .set('Authorization', 'Api-Key 1f5b4ed0-f0b3-11e8-9aa2-e7e59d5339f5')
+            .set('Authorization', `Api-Key ${testUser.authToken}`)
             .expect(res => {
               expect(res.body.isReady).toEqual(true);
             });
         });
+      });
+    });
+  });
+
+  describe('PUT /api/v1.0/games/:id', () => {
+    var testGameId = 0;
+
+    beforeEach(() => {
+      return Game.createGame().then((game) => {
+        testGameId = game.gameId;
+      });
+    });
+
+    describe('for unauthenticated users', () => {
+      it('should return a bad request', () => {
+        return request(app)
+          .put(`/api/v1.0/games/${testGameId}`, {})
+          .expect(401);
+      });
+    });
+
+    describe('for games that don\'t exist', () => {
+      it('should return a bad request', () => {
+        return request(app)
+          .put('/api/v1.0/games/99999', {})
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
+          .expect(404);
+      });
+    });
+
+    describe('for games that do exist', () => {
+      it('should return a success', () => {
+        return request(app)
+          .put(`/api/v1.0/games/${testGameId}`)
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
+          .send({"score": 1})
+          .expect(200);
       });
     });
   });

@@ -26,7 +26,13 @@ async function createGame(req, res) {
 async function completeGame(req, res) {
   let gameId = req.params.gameId;
   let userId = req.user.id;
-  let score = req.body["score"]["score"];
+  let score = req.body["score"];
+
+  let game = await Game.getGame(gameId);
+  if (!game) {
+    res.sendStatus(404);
+    return;
+  }
 
   try {
     let game = await Game.completeGame(gameId, userId, score);
