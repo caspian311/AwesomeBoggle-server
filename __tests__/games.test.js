@@ -13,7 +13,7 @@ describe('games', () => {
     await User.deleteAll();
     await Game.deleteAll();
     testUser = await User.create('test_user');
-    return Game.createGame().then((game) => {
+    return Game.create().then((game) => {
       testGameId = game.gameId;
     })
   });

@@ -11,10 +11,8 @@ app.post('/:gameId/invitations', Authenticator.auth, inviteOpponents);
 app.put('/:gameId/invitations', Authenticator.auth, acceptInvite);
 
 async function createGame(req, res) {
-  let gameMembers = req.body["userIds"];
-
   try {
-    let game = await Game.createGame(gameMembers);
+    let game = await Game.create();
     game['isReady'] = false;
     res.json(game);
   } catch (err) {
@@ -35,7 +33,7 @@ async function completeGame(req, res) {
   }
 
   try {
-    let game = await Game.completeGame(gameId, userId, score);
+    let game = await Game.complete(gameId, userId, score);
     res.json(game)
   } catch(err) {
     console.log(err);

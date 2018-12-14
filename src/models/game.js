@@ -32,7 +32,7 @@ class Game {
     return await conn.query(deleteGamesSQL);
   }
 
-  static async createGame() {
+  static async create() {
     let grid = new GameMaker().generateGrid();
 
     let createdGameResults = await conn.query(createGameSql, grid);
@@ -41,7 +41,7 @@ class Game {
     return { gameId: gameId, grid: grid };
   }
 
-  static async completeGame(gameId, userId, score) {
+  static async complete(gameId, userId, score) {
     await conn.query(updateScoreSql, [ score, gameId, userId ]);
     await conn.query(updateGameSql, [ gameId ]);
     return await conn.query(getGameSql, [ gameId ]);

@@ -13,7 +13,7 @@ describe('users', () => {
     await User.deleteAll();
     await Game.deleteAll();
     testUser = await User.create('test_user');
-    return Game.createGame().then((game) => {
+    return Game.create().then((game) => {
       testGameId = game.gameId;
     })
   });
@@ -111,12 +111,12 @@ describe('users', () => {
         let user3 = await User.create('test_user3');
         let user4 = await User.create('test_user4');
 
-        let previousGame = await Game.createGame();
+        let previousGame = await Game.create();
         await Invitation.inviteOpponents(previousGame.gameId, [ testUser.id, user3.id ]);
         await Invitation.accept(previousGame.gameId, testUser.id);
         await Invitation.accept(previousGame.gameId, user3.id);
-        await Game.completeGame(previousGame.gameId, testUser.id, 1);
-        await Game.completeGame(previousGame.gameId, user3.id, 1);
+        await Game.complete(previousGame.gameId, testUser.id, 1);
+        await Game.complete(previousGame.gameId, user3.id, 1);
 
         await Invitation.inviteOpponents(testGameId, [ testUser.id, user3.id, user4.id ]);
         await Invitation.accept(testGameId, testUser.id);
