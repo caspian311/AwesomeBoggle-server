@@ -2,16 +2,20 @@ import request from 'supertest';
 import app from '../src/app';
 import User from '../src/models/user';
 import Game from '../src/models/game';
+import Invitation from '../src/models/invitation';
 import conn from '../src/db';
 
 describe('users', () => {
+  var testGameId = 0;
   var testUser = null;
 
   beforeEach(async () => {
     await User.deleteAll();
-    return User.create('test_user').then(user => {
-      testUser = user;
-    });
+    await Game.deleteAll();
+    testUser = await User.create('test_user');
+    return Game.createGame().then((game) => {
+      testGameId = game.gameId;
+    })
   });
 
   describe('GET /users/:username', () => {
@@ -102,19 +106,31 @@ describe('users', () => {
           .expect(200);
       });
 
-      // it('should return available users', () => {
-      //   return request(app).get('/api/v1.0/users')
-      //     .set('Authorization', `Api-Key ${testUser.authToken}`)
-      //     .expect(
-      //       [
-      //         { id: 2, username: 'abbi' },
-      //         { id: 6, username: 'new_user1' },
-      //         { id: 7, username: 'new_user2' },
-      //         { id: 8, username: 'new_user3' },
-      //         { id: 5, username: 'peter' }
-      //       ]
-      //     );
-      // });
+      it('should return available users', async () => {
+        let user2 = await User.create('test_user2');
+        let user3 = await User.create('test_user3');
+        let user4 = await User.create('test_user4');
+
+        let previousGame = await Game.createGame();
+        await Invitation.inviteOpponents(previousGame.gameId, [ testUser.id, user3.id ]);
+        await Invitation.accept(previousGame.gameId, testUser.id);
+        await Invitation.accept(previousGame.gameId, user3.id);
+        await Game.completeGame(previousGame.gameId, testUser.id, 1);
+        await Game.completeGame(previousGame.gameId, user3.id, 1);
+
+        await Invitation.inviteOpponents(testGameId, [ testUser.id, user3.id, user4.id ]);
+        await Invitation.accept(testGameId, testUser.id);
+        await Invitation.accept(testGameId, user4.id);
+
+        return request(app).get('/api/v1.0/users')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
+          .expect(
+            [
+              { id: user2.id, username: user2.username },
+              { id: user3.id, username: user3.username }
+            ]
+          );
+      });
     });
   });
 

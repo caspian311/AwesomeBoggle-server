@@ -7,12 +7,14 @@ const availableUsersSql = `
   FROM users u
   WHERE u.id NOT IN (
     SELECT u.id
-    FROM users u, games g, scores s
-    WHERE s.game_id = g.id
-    AND s.user_id = u.id
+    FROM invitations i, users u, games g
+    WHERE i.user_id = u.id
+    AND g.id = i.game_id
+    AND i.accepted = 1
     AND g.finished = 0
   )
   AND u.id NOT IN (?)
+  ORDER BY id
 `;
 const usernameAvailabilitySql = `
   SELECT u.id as id, u.username as username, u.auth_token as authToken

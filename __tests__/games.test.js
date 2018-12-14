@@ -12,13 +12,10 @@ describe('games', () => {
   beforeEach(async () => {
     await User.deleteAll();
     await Game.deleteAll();
-    return User.create('test_user').then(user => {
-      testUser = user;
-    }).then(() => {
-      return Game.createGame().then((game) => {
-        testGameId = game.gameId;
-      })
-    });
+    testUser = await User.create('test_user');
+    return Game.createGame().then((game) => {
+      testGameId = game.gameId;
+    })
   });
 
   describe('POST /api/v1.0/games', () => {
