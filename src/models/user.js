@@ -28,14 +28,17 @@ const userByApiKeySql = `
   FROM users u
   WHERE u.auth_token = ?
 `;
+const deleteUserSQL = `
+  DELETE FROM users;
+`;
 
 class User {
+  static async deleteAll() {
+    return await conn.query(deleteUserSQL);
+  }
+
   static async getAvailableUsers(currentUserId) {
-    try {
-      return await conn.query(availableUsersSql, currentUserId);
-    } catch (err) {
-      throw err;
-    }
+    return await conn.query(availableUsersSql, currentUserId);
   }
 
   static async findByUsername(username) {
@@ -57,7 +60,7 @@ class User {
     return {
       id: userId,
       username: username,
-      auth_token: authToken
+      authToken: authToken
     };
   }
 

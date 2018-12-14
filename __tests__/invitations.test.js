@@ -5,19 +5,19 @@ import Game from '../src/models/game';
 import Invitation from '../src/models/invitation';
 import User from '../src/models/user';
 
-describe('inventations', () => {
+describe('invitations', () => {
   var testGameId = 0;
   var testUser = null;
 
-  beforeEach(() => {
-    return Game.createGame().then((game) => {
-      testGameId = game.gameId;
-    });
-  });
-
-  beforeEach(() => {
-    return User.findByUsername('matt').then(user => {
+  beforeEach(async () => {
+    await User.deleteAll();
+    await Game.deleteAll();
+    return User.create('test_user').then(user => {
       testUser = user;
+    }).then(() => {
+      return Game.createGame().then((game) => {
+        testGameId = game.gameId;
+      })
     });
   });
 
@@ -26,11 +26,9 @@ describe('inventations', () => {
       it('should return a bad request', () => {
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
           .send({
-            userId: 2
+            userIds: [testUser.id]
           })
-          .then(response => {
-            expect(response.statusCode).toBe(401);
-          });
+          .expect(401);
       });
     });
 
@@ -41,9 +39,7 @@ describe('inventations', () => {
           .send({
             userIds: [ '9999' ]
           })
-          .then(response => {
-            expect(response.statusCode).toBe(404);
-          });
+          .expect(404);
       });
     });
 
@@ -52,7 +48,7 @@ describe('inventations', () => {
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
           .set('Authorization', `Api-Key ${testUser.authToken}`)
           .send({
-            userIds: [ '2' ]
+            userIds: [ testUser.id ]
           })
           .expect(200);
       });
@@ -62,7 +58,7 @@ describe('inventations', () => {
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
           .set('Authorization', `Api-Key ${testUser.authToken}`)
           .send({
-            userIds: [ '2' ]
+            userIds: [ testUser.id ]
           })
           .then(async () => {
             let currentInvitations = await Invitation.getAll();
@@ -70,15 +66,16 @@ describe('inventations', () => {
           });
       });
 
-      it('should return the invitation', async () => {
+      it('should return the invitations', async () => {
+        let testUser2 = await User.create('other_user');
         return request(app).post(`/api/v1.0/games/${testGameId}/invitations`)
           .set('Authorization', `Api-Key ${testUser.authToken}`)
           .send({
-            userIds: [ '2', '5' ]
+            userIds: [ testUser.id, testUser2.id ]
           })
           .expect([
-            { gameId: testGameId, userId: 2, username: 'abbi', accepted: 0 },
-            { gameId: testGameId, userId: 5, username: 'peter', accepted: 0 }
+            { gameId: testGameId, userId: testUser.id, username: testUser.username, accepted: 0 },
+            { gameId: testGameId, userId: testUser2.id, username: testUser2.username, accepted: 0 }
           ]);
       });
     });

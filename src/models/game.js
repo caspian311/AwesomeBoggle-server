@@ -23,9 +23,15 @@ const getGameSql = `
   FROM games g
   WHERE g.id = ?
 `;
-
+const deleteGamesSQL = `
+  DELETE from games;
+`;
 
 class Game {
+  static async deleteAll() {
+    return await conn.query(deleteGamesSQL);
+  }
+
   static async createGame() {
     let grid = new GameMaker().generateGrid();
 

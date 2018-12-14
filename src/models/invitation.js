@@ -6,7 +6,7 @@ const createInvitationSQL = `
     VALUES ?
 `;
 const allInvitationsSQL = `
-  SELECT game_id, user_id
+  SELECT game_id as gameId, user_id as userId
   FROM invitations
 `;
 const invitationsForGameSQL = `
@@ -16,6 +16,7 @@ const invitationsForGameSQL = `
   FROM invitations i, users u
   WHERE u.id = i.user_id
   AND i.game_id = ?
+  ORDER BY gameId, userId
 `;
 const acceptInvitationSQL = `
   UPDATE invitations

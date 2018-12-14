@@ -6,11 +6,18 @@ import Invitation from '../src/models/invitation';
 import User from '../src/models/user';
 
 describe('games', () => {
+  var testGameId = 0;
   var testUser = null;
 
-  beforeEach(() => {
-    return User.findByUsername('matt').then(user => {
+  beforeEach(async () => {
+    await User.deleteAll();
+    await Game.deleteAll();
+    return User.create('test_user').then(user => {
       testUser = user;
+    }).then(() => {
+      return Game.createGame().then((game) => {
+        testGameId = game.gameId;
+      })
     });
   });
 
@@ -31,12 +38,12 @@ describe('games', () => {
           .expect(200);
       });
 
-      it('should return a success', () => {
+      it('should return the created game', () => {
         return request(app)
           .post('/api/v1.0/games')
           .set('Authorization', `Api-Key ${testUser.authToken}`)
           .expect(res => {
-            expect(res.body.gameId).toBeGreaterThan(2);
+            expect(res.body.gameId).toBeGreaterThan(0);
             expect(res.body.grid.length).toEqual(16);
             expect(res.body.isReady).toBeFalsy();
           });
@@ -45,14 +52,6 @@ describe('games', () => {
   });
 
   describe('GET /api/v1.0/games/:id', () => {
-    var testGameId = 0;
-
-    beforeEach(() => {
-      return Game.createGame().then((game) => {
-        testGameId = game.gameId;
-      });
-    });
-
     describe('for unauthenticated users', () => {
       it('should return a bad request', () => {
         return request(app)
@@ -79,7 +78,8 @@ describe('games', () => {
       });
 
       it('should return game info', async () => {
-        await Invitation.inviteOpponents(testGameId, [1, 2]);
+        let testUser2 = await User.create('other_user')
+        await Invitation.inviteOpponents(testGameId, [testUser.id, testUser2.id]);
         return request(app)
           .get(`/api/v1.0/games/${testGameId}`)
           .set('Authorization', `Api-Key ${testUser.authToken}`)
@@ -102,7 +102,8 @@ describe('games', () => {
 
       describe('for games with outstanding invitations', () => {
         it('should return a NOT ready game', async () => {
-          await Invitation.inviteOpponents(testGameId, [1, 2]);
+          let testUser2 = await User.create('other_user')
+          await Invitation.inviteOpponents(testGameId, [testUser.id, testUser2.id]);
           return request(app)
             .get(`/api/v1.0/games/${testGameId}`)
             .set('Authorization', `Api-Key ${testUser.authToken}`)
@@ -114,9 +115,10 @@ describe('games', () => {
 
       describe('for games that have accepted invitations', () => {
         it('should return a ready game', async () => {
-          await Invitation.inviteOpponents(testGameId, [1, 2]);
-          await Invitation.accept(testGameId, 1);
-          await Invitation.accept(testGameId, 2);
+          let testUser2 = await User.create('other_user')
+          await Invitation.inviteOpponents(testGameId, [testUser.id, testUser2.id]);
+          await Invitation.accept(testGameId, testUser.id);
+          await Invitation.accept(testGameId, testUser2.id);
           return request(app)
             .get(`/api/v1.0/games/${testGameId}`)
             .set('Authorization', `Api-Key ${testUser.authToken}`)
@@ -129,14 +131,6 @@ describe('games', () => {
   });
 
   describe('PUT /api/v1.0/games/:id', () => {
-    var testGameId = 0;
-
-    beforeEach(() => {
-      return Game.createGame().then((game) => {
-        testGameId = game.gameId;
-      });
-    });
-
     describe('for unauthenticated users', () => {
       it('should return a bad request', () => {
         return request(app)

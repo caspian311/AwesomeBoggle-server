@@ -32,7 +32,8 @@
     "verbose": true,
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.js"
+      "src/**/*.js",
+      "!src/index.js"
     ],
     "globalTeardown": "./__tests__/config.js",
     "testMatch": [
