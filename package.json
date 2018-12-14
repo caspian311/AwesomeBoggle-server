@@ -7,7 +7,7 @@
     "dev": "nodemon --config 1200ms -w src --exec \"babel-node src --presets es2015,stage-0\"",
     "build": "babel src -s -D -d dist --presets es2015,stage-0",
     "prestart": "npm run -s build",
-    "test": "eslint src && NODE_ENV=test db/setup.sh && NODE_ENV=test jest --detectOpenHandles",
+    "test": "eslint src && NODE_ENV=test db/setup.sh && NODE_ENV=test jest --runInBand",
     "start": "npm build && node dist"
   },
   "eslintConfig": {
