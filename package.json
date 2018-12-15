@@ -8,7 +8,7 @@
     "build": "babel src -s -D -d dist --presets es2015,stage-0",
     "prestart": "npm run -s build",
     "test": "eslint src && NODE_ENV=test db/setup.sh && NODE_ENV=test jest --runInBand",
-    "start": "npm build && node dist"
+    "start": "npm run-script build && node dist"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
