@@ -33,7 +33,8 @@
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.js",
-      "!src/index.js"
+      "!src/index.js",
+      "!src/config.js"
     ],
     "globalTeardown": "./__tests__/config.js",
     "testMatch": [
