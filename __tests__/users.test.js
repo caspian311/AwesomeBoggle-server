@@ -99,6 +99,14 @@ describe('users', () => {
       });
     });
 
+    describe('with bad authentication', () => {
+      it('should return a success', () => {
+        return request(app).get('/api/v1.0/users')
+          .set('Authorization', `Api-Key 1234`)
+          .expect(401);
+      });
+    });
+
     describe('with authentication', () => {
       it('should return a success', () => {
         return request(app).get('/api/v1.0/users')
