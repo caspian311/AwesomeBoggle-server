@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 pushd $(dirname $0) &> /dev/null
-  basedir=$(pwd)
+  BASEDIR=$(pwd)
 popd &> /dev/null
 
 NODE_ENV=${NODE_ENV:-development}
@@ -10,16 +10,16 @@ if [ "$NODE_ENV" == "production" ]
 then
   DATABASE_NAME="awesomeboggle"
 fi
-SETUP_DATABASE_FILE=${basedir}/database.sql
+SETUP_DATABASE_FILE=${BASEDIR}/database.sql
 
 echo "Setting database ${DATABASE_NAME}"
 mysql -uroot -e "set @db='${DATABASE_NAME}'; source ${SETUP_DATABASE_FILE};"
 
-files=( user.sql schema.sql data.sql )
+files=( user.sql schema.sql data.sql words.sql )
 
 for i in "${files[@]}"
 do
-  filename="${basedir}/$i"
+  filename="${BASEDIR}/$i"
   echo -n "Running $filename..."
   mysql -uroot ${DATABASE_NAME} -e "set @db='${DATABASE_NAME}'; source ${filename};"
   echo "done"

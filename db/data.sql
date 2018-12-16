@@ -43,9 +43,4 @@ INSERT INTO scores (user_id, game_id, score)
 
 INSERT INTO scores (user_id, game_id, score)
   values (@user4, @game2, 0);
-
-INSERT INTO words (text) values
-  ('test'),
-  ('monkey'),
-  ('foo'),
-  ('bar');
+  
