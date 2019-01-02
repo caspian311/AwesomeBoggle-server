@@ -11,7 +11,7 @@ cat << EOF > $DEST_FILE
 INSERT INTO words (text) VALUES
 EOF
 
-cat $SOURCE_FILE | gsed -r '/^.{,3}$/d' | gsed -r '/[0-9]/d' | gsed -r '/\./d' | gsed -r '/[-]/d' | gsed 's/./\L\0/g' | gsed -r "/[']/d" | nl | while read line_number word
+cat $SOURCE_FILE | gsed -r '/^.{,2}$/d' | gsed -r '/[0-9]/d' | gsed -r '/\./d' | gsed -r '/[-]/d' | gsed 's/./\L\0/g' | gsed -r "/[']/d" | nl | while read line_number word
 do
   if [ $line_number -gt 1 ]
   then
