@@ -4,11 +4,22 @@ import Authenticator from '../authenticator';
 import Game from '../models/game';
 import Invitation from '../models/invitation';
 
+app.get('/', Authenticator.auth, gameHistory);
 app.post('/', Authenticator.auth, createGame);
 app.put('/:gameId', Authenticator.auth, completeGame);
 app.get('/:gameId', Authenticator.auth, getGame);
 app.post('/:gameId/invitations', Authenticator.auth, inviteOpponents);
 app.put('/:gameId/invitations', Authenticator.auth, acceptInvite);
+
+async function gameHistory(req, res) {
+  try {
+    let games = await Game.allForUser(req.user.id);
+    res.send(games)
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500)
+  }
+}
 
 async function createGame(req, res) {
   try {

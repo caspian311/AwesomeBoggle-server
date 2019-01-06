@@ -7,11 +7,9 @@ const createGameSql = `
     games (grid, created_on, finished)
     VALUES (?, NOW(), 0)
 `;
-const updateScoreSql = `
-  UPDATE scores
-  SET score = ?
-  WHERE game_id = ?
-  AND user_id = ?
+const createScoreSql = `
+  INSERT INTO scores (score, game_id, user_id)
+    VALUES (?, ?, ?)
 `;
 const updateGameSql = `
   UPDATE games
@@ -26,8 +24,24 @@ const getGameSql = `
 const deleteGamesSQL = `
   DELETE from games;
 `;
+const gameHistorySQL = `
+  SELECT g.id, g.created_on as createdOn, u.id as userId, u.username, s.score
+  FROM games g, scores s, users u
+  WHERE g.finished = 1
+  AND u.id = s.user_id
+  AND s.game_id = g.id
+  AND g.id IN (
+    SELECT s2.game_id
+    FROM scores s2
+    WHERE s2.user_id = ?
+  )
+`;
 
 class Game {
+  static async allForUser(userId) {
+    return await conn.query(gameHistorySQL, userId);
+  }
+
   static async deleteAll() {
     return await conn.query(deleteGamesSQL);
   }
@@ -42,7 +56,7 @@ class Game {
   }
 
   static async complete(gameId, userId, score) {
-    await conn.query(updateScoreSql, [ score, gameId, userId ]);
+    await conn.query(createScoreSql, [ score, gameId, userId ]);
     await conn.query(updateGameSql, [ gameId ]);
     return await conn.query(getGameSql, [ gameId ]);
   }
