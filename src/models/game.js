@@ -41,16 +41,24 @@ class Game {
   static async allForUser(userId) {
     let forAll = await conn.query(gameHistorySQL, userId);
     return forAll.reduce((allGames, currentGame) => {
-      let thing = allGames.find(game => game.id == currentGame.id);
-      if (!thing) {
-        thing = currentGame;
-        allGames.push(thing);
+      let gameInResults = allGames.find(game => game.id == currentGame.id);
+      if (!gameInResults) {
+        gameInResults = {
+          id: currentGame.id,
+          createdOn: currentGame.createdOn,
+          scores: []
+        };
+        allGames.push(gameInResults);
       }
-      thing.scores = (thing.scores || []);
-      thing.scores.push({ username: currentGame.username, score: currentGame.score})
-      delete thing['username'];
-      delete thing['score'];
-      delete thing['userId'];
+      gameInResults.scores.push(
+        { userId: currentGame.userId,
+          username: currentGame.username,
+          score: currentGame.score}
+      );
+      let winner = gameInResults.scores.reduce((maxScore, currentScore) => {
+        return maxScore.score > currentScore.score ? maxScore : currentScore;
+      }, {});
+      gameInResults.win = winner.userId === userId ? 1 : 0
 
       return allGames;
     }, []);

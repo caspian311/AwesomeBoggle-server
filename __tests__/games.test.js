@@ -8,13 +8,14 @@ import User from '../src/models/user';
 describe('games', () => {
   var testGameId = 0;
   var testUser = null;
+  var otherTestUser = null;
 
   beforeEach(async () => {
     await User.deleteAll();
     await Game.deleteAll();
     testUser = await User.create('test_user_1');
     let testUser2 = await User.create('test_user_2');
-    let testUser3 = await User.create('test_user_3');
+    otherTestUser = await User.create('test_user_3');
     let game1 = await Game.create();
     let game2 = await Game.create();
     let game3 = await Game.create();
@@ -31,7 +32,7 @@ describe('games', () => {
     await Game.complete(game3.gameId, testUser2.id, 9);
 
     await Game.complete(game4.gameId, testUser2.id, 2);
-    await Game.complete(game4.gameId, testUser3.id, 7);
+    await Game.complete(game4.gameId, otherTestUser.id, 7);
 
     testGameId = game5.gameId;
   });
@@ -53,12 +54,32 @@ describe('games', () => {
           .expect(200);
       });
 
-      it('should all games for that user', () => {
+      it('should show all games for that user', () => {
         return request(app)
           .get('/api/v1.0/games')
           .set('Authorization', `Api-Key ${testUser.authToken}`)
           .expect(res => {
             expect(res.body.length).toEqual(3);
+
+            expect(res.body[0].win).toEqual(0);
+            expect(res.body[1].win).toEqual(0);
+            expect(res.body[2].win).toEqual(1);
+
+            expect(res.body[0].scores.length).toEqual(2);
+            expect(res.body[0].scores[0].userId).toEqual(testUser.id);
+            expect(res.body[0].scores[0].username).toEqual(testUser.username);
+          });
+      });
+
+      it('should show all games for another user', () => {
+        return request(app)
+          .get('/api/v1.0/games')
+          .set('Authorization', `Api-Key ${otherTestUser.authToken}`)
+          .expect(res => {
+            expect(res.body.length).toEqual(1);
+            expect(res.body[0].scores.length).toEqual(2);
+            expect(res.body[0].scores[1].userId).toEqual(otherTestUser.id);
+            expect(res.body[0].scores[1].username).toEqual(otherTestUser.username);
           });
       });
     });
