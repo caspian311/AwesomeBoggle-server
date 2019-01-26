@@ -12,10 +12,56 @@ describe('games', () => {
   beforeEach(async () => {
     await User.deleteAll();
     await Game.deleteAll();
-    testUser = await User.create('test_user');
-    return Game.create().then((game) => {
-      testGameId = game.gameId;
-    })
+    testUser = await User.create('test_user_1');
+    let testUser2 = await User.create('test_user_2');
+    let testUser3 = await User.create('test_user_3');
+    let game1 = await Game.create();
+    let game2 = await Game.create();
+    let game3 = await Game.create();
+    let game4 = await Game.create();
+    let game5 = await Game.create();
+
+    await Game.complete(game1.gameId, testUser.id, 10);
+    await Game.complete(game1.gameId, testUser2.id, 12);
+
+    await Game.complete(game2.gameId, testUser.id, 12);
+    await Game.complete(game2.gameId, testUser2.id, 14);
+
+    await Game.complete(game3.gameId, testUser.id, 22);
+    await Game.complete(game3.gameId, testUser2.id, 9);
+
+    await Game.complete(game4.gameId, testUser2.id, 2);
+    await Game.complete(game4.gameId, testUser3.id, 7);
+
+    testGameId = game5.gameId;
+  });
+
+  describe('GET /api/v1.0/games', () => {
+    describe('for unauthenticated users', () => {
+      it('should return a bad request', () => {
+        return request(app)
+          .get('/api/v1.0/games')
+          .expect(401);
+      });
+    });
+
+    describe('for authenticated users', () => {
+      it('should return a success', () => {
+        return request(app)
+          .get('/api/v1.0/games')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
+          .expect(200);
+      });
+
+      it('should all games for that user', () => {
+        return request(app)
+          .get('/api/v1.0/games')
+          .set('Authorization', `Api-Key ${testUser.authToken}`)
+          .expect(res => {
+            expect(res.body.length).toEqual(3);
+          });
+      });
+    });
   });
 
   describe('POST /api/v1.0/games', () => {

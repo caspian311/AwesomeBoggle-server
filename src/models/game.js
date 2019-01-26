@@ -39,7 +39,21 @@ const gameHistorySQL = `
 
 class Game {
   static async allForUser(userId) {
-    return await conn.query(gameHistorySQL, userId);
+    let forAll = await conn.query(gameHistorySQL, userId);
+    return forAll.reduce((allGames, currentGame) => {
+      let thing = allGames.find(game => game.id == currentGame.id);
+      if (!thing) {
+        thing = currentGame;
+        allGames.push(thing);
+      }
+      thing.scores = (thing.scores || []);
+      thing.scores.push({ username: currentGame.username, score: currentGame.score})
+      delete thing['username'];
+      delete thing['score'];
+      delete thing['userId'];
+
+      return allGames;
+    }, []);
   }
 
   static async deleteAll() {
